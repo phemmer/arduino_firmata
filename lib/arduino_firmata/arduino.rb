@@ -50,15 +50,6 @@ module ArduinoFirmata
         break if @version
       end
       sleep 3 if old_arduino_device?
-
-      (0...6).each do |i|
-        write(REPORT_ANALOG | i)
-        write 1
-      end
-      (0...2).each do |i|
-        write(REPORT_DIGITAL | i)
-        write 1
-      end
     end
 
     def run(&block)
