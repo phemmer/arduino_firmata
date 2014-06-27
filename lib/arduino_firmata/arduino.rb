@@ -3,11 +3,10 @@ module ArduinoFirmata
   class Arduino
     include EventEmitter
 
-    attr_reader :version, :status, :nonblock_io, :eventmachine
+    attr_reader :version, :status, :eventmachine
 
     def initialize(serialport_name, params)
       @serialport_name = serialport_name
-      @nonblock_io = !!params[:nonblock_io]
       @eventmachine = !!params[:eventmachine]
       @read_byte_size = eventmachine ? 256 : 9600
       @process_input_interval = eventmachine ? 0.0001 : 0.01
@@ -164,27 +163,14 @@ module ArduinoFirmata
     private
     def write(cmd)
       return if status == Status::CLOSE
-      if nonblock_io
-        begin
-          @serial.write_nonblock cmd.chr
-        rescue Errno::EAGAIN
-          sleep 0.1
-          retry
-        end
-      else
-        @serial.write cmd.chr
-      end
+      @serial.write cmd.chr
     end
 
     def read
       return if status == Status::CLOSE
       data = nil
       begin
-        if nonblock_io
-          data = @serial.read_nonblock @read_byte_size
-        else
-          data = @serial.read @read_byte_size
-        end
+        data = @serial.readpartial @read_byte_size
       rescue IOError, EOFError => e
       end
       data
