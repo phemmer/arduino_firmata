@@ -121,6 +121,27 @@ module ArduinoFirmata
       end
     end
 
+    def get_pin_state(pin)
+      cv = ConditionVariable.new
+      mutex = Mutex.new
+      mode = nil
+      state = nil
+
+      sysex_proc = nil
+      sysex_proc = proc do |command, data|
+        if command != PIN_STATE_RESPONSE then
+          once :sysex, &sysex_proc
+        else
+          mode, state = data
+          mutex.synchronize { cv.signal }
+        end
+      end
+      once :sysex, &sysex_proc
+      sysex(PIN_STATE_QUERY, [pin])
+      mutex.synchronize { cv.wait(mutex) }
+      return mode, state
+    end
+
     def digital_write(pin, value)
       raise ArgumentError, "invalid pin number (#{pin})" if pin.class != Fixnum or pin < 0
       pin_mode pin, OUTPUT

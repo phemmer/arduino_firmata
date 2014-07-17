@@ -35,6 +35,8 @@ module ArduinoFirmata
   REPORT_DIGITAL  = 0xD0 # enable digital input by port
   SET_PIN_MODE    = 0xF4 # set a pin to INPUT/OUTPUT/PWM/etc
   REPORT_VERSION  = 0xF9 # report firmware version
+  PIN_STATE_QUERY = 0x6D
+  PIN_STATE_RESPONSE = 0x6E
   SYSTEM_RESET    = 0xFF # reset from MIDI
   START_SYSEX     = 0xF0 # start a MIDI SysEx message
   END_SYSEX       = 0xF7 # end a MIDI SysEx message
